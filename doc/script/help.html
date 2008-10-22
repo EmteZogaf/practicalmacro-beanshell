@@ -1,0 +1,37 @@
+<html>
+<h1>Practically Macro: Writing editor scripts</h1>
+Editor scripts are written in beanshell.<br>
+The context variables passed in are:
+<ul>styledText - a StyledText object - This is the object corresponding to the current editor.  You can use it to insert text, grab text, change the selection, etc.</ul>
+<ul>findTarget - an IFindReplaceTarget object - This object is useful for performing searches on the text object.  You can typically cast this object to IFindReplaceTargetExtension and IFindReplaceTargetExtension3 to perform searches with more options</ul>
+<ul>console - a console object corresponding to the Macro console view.  You can use this object to spit out debug information for your scripts.  Use write(String), writeln(String), and write(Exception)</ul>
+
+Return Boolean.TRUE to indicate that the script finished normally, or Boolean.FALSE to indicate abnormal termination and that further macro commands should not be executed.  If you return nothing, that is considered "TRUE".
+<br>Here's an example script that removes the XML comments from a block including the cursor.
+<pre>
+//Scripts are beanshell format (see http://www.beanshell.org/) 
+//variable               type
+//styledText             the org.eclipse.swt.custom.StyledText instance for the current editor
+//console                write output to the macro console via console.write(String), .writeln(String), .write(Exception)
+//findTarget             the instance of org.eclipse.jface.text.IFindReplaceTarget
+import org.eclipse.swt.custom.StyledText;
+import org.eclipse.jface.text.IFindReplaceTarget;
+
+int caretOffset=styledText.getCaretOffset();
+int startComment=findTarget.findAndSelect(caretOffset, "&lt;!--", false, true, false);
+int endComment=findTarget.findAndSelect(caretOffset, "--&gt;", true, true, false);
+int possibleStartComment=findTarget.findAndSelect(caretOffset, "&lt;!--", true, true, false);
+int possibleEndComment=findTarget.findAndSelect(caretOffset, "--&gt;", false, true, false);
+if (startComment&gt;=0 && endComment&gt;=0 && (possibleEndComment&lt;0 || startComment&gt;=possibleEndComment) && (possibleStartComment&lt;0 || endComment&lt;possibleStartComment))
+{
+     styledText.replaceTextRange(endComment, 3, "");
+     styledText.replaceTextRange(startComment, 4, "");
+     styledText.setSelection(caretOffset-4, caretOffset-4);
+}
+else
+{
+     //regardless, set position back to original
+    styledText.setSelection(caretOffset, caretOffset);
+}
+</pre>
+</html>

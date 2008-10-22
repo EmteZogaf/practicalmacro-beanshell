@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+   <extension
+         point="PracticallyMacro.scriptingSupport">
+      <scriptSupport
+            class="bscs.ScriptingSupport">
+      </scriptSupport>
+   </extension>
+
+	<extension point="org.eclipse.help.contexts">
+	    <contexts file="helpContexts.xml" />
+	</extension>
+ <extension
+       point="org.eclipse.ui.preferencePages">
+    <page
+          category="practicallymacro.editormacros.optionsPage"
+          class="bscs.PrefPage"
+          id="bscs.scriptsupport.preferencePage"
+          name="Bean Shell Scripts">
+    </page>
+ </extension>
+ <extension
+       point="org.eclipse.core.runtime.preferences">
+    <initializer
+          class="bscs.Initializer">
+    </initializer>
+ </extension>
+
+</plugin>
